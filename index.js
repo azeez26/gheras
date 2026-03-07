@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
+let usersRoutes = require('./routes/user')
+
 dotenv.config();
 
 const app = express();
@@ -10,6 +12,13 @@ const PORT = process.env.PORT || 3000;  nn
 
 app.use(express.json());
 app.use(cors()); 
+app.use('/users', usersRoutes)
+
+
+app.use((req, res)=>{
+    res.status(404).json({message:`${req.url} Not Found`})
+})
+
 
 const dbURI = process.env.MONGO_URI;
 
