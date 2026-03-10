@@ -8,7 +8,6 @@ let { authentication, authorization } = require('../Middlewares/authentication')
 let { registerUser, verifyEmail, getUsersNames, updateUser, deleteUser, login, updatePassword, forgetPassword, getUserById, verifyEmailAndResetPassword, googleAuthCallback } = require('../controllers/user')
 
 
-
 Router.post('/signup', registerUser)
 Router.post('/verify-email', verifyEmail)
 Router.post('/login', login)
