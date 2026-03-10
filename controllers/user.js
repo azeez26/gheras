@@ -5,7 +5,7 @@ const crypto = require('crypto') // bulit in Node for encryption
 
 let userModel = require('../models/user')
 
-
+//Ramadan
 let registerUser = async (req, res) => {
     try {
 
@@ -46,6 +46,7 @@ let registerUser = async (req, res) => {
     }
 }
 
+//Abo Sofyan
 let verifyEmail = async (req, res) => {
     try {
         const { email, code } = req.body;
@@ -118,7 +119,7 @@ let updateUser = async (req, res) => {
     }
 }
 
-
+//Abo Sofyan
 let deleteUser = async (req, res) => {
     try {
         const userId = req.params.id
@@ -139,7 +140,7 @@ let deleteUser = async (req, res) => {
 }
 
 
-
+//Abo Sofyan
 let login = async (req, res) => {
     try {
 
@@ -171,7 +172,7 @@ let login = async (req, res) => {
     }
 }
 
-
+//Abo Sofyan
 let updatePassword = async (req, res) => {
     try {
 
@@ -205,7 +206,7 @@ let updatePassword = async (req, res) => {
     }
 }
 
-
+//Ramadan
 //مكتبه تأكيد عبر الايميل
 let forgetPassword = async (req, res) => {
 
@@ -286,4 +287,20 @@ let verifyEmailAndResetPassword = async (req, res) => {
     }
 }
 
-module.exports = { registerUser, verifyEmail, getUsersNames, updateUser, deleteUser, login, updatePassword, forgetPassword, getUserById, verifyEmailAndResetPassword }
+//Abo Sofyan
+let googleAuthCallback = async (req, res) => {
+    try {
+        const user = req.user;
+        let token = jwt.sign({ id: user._id, email: user.email, role: user.role }, process.env.SECRET_KEY);
+        // Normally, for Google popup logins, you might redirect to front-end with token in URL 
+        // OR send back as JSON depending on your FE setup.
+        res.status(200).json({
+            message: "Login successful with Google",
+            token: token
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+module.exports = { registerUser, verifyEmail, getUsersNames, updateUser, deleteUser, login, updatePassword, forgetPassword, getUserById, verifyEmailAndResetPassword, googleAuthCallback }
