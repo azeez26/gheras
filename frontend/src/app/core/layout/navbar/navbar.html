@@ -1,0 +1,17 @@
+<nav class="navbar">
+  <a routerLink="/" class="nav-logo">
+    <div class="logo-icon">🌿</div>
+    نبتتي
+  </a>
+  <ul class="nav-links">
+    <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">الرئيسية</a></li>
+    <li><a routerLink="/wiki" routerLinkActive="active">الموسوعة</a></li>
+    <li><a routerLink="/shop" routerLinkActive="active">المتجر</a></li>
+    <li><a routerLink="/forum" routerLinkActive="active">المنتدى</a></li>
+    <li><a routerLink="/blog" routerLinkActive="active">المدونة</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a routerLink="/login" class="btn btn-ghost btn-sm">دخول</a>
+    <a routerLink="/register" class="btn btn-primary btn-sm">ابدأ مجاناً</a>
+  </div>
+</nav>
