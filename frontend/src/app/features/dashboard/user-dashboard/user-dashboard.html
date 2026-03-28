@@ -103,7 +103,7 @@
               </div>
             </div>
             <div style="padding:.75rem 1rem;border-top:1px solid var(--neutral-100);display:flex;gap:.5rem">
-              <button class="btn btn-secondary btn-sm" style="flex:1">التفاصيل</button>
+              <button (click)="openPlantDetail(item._id)" class="btn btn-secondary btn-sm" style="flex:1">التفاصيل</button>
               <button class="btn btn-primary btn-sm">سقاية</button>
             </div>
           </div>
@@ -131,135 +131,102 @@
 </div>
 
 <!-- Plant Detail Sheet (inline panel) -->
-<div id="plant-detail" style="display:none;position:fixed;inset:0;z-index:1500;display:none">
-  <div style="position:absolute;inset:0;background:rgba(0,0,0,.4)" onclick="closePlantDetail()"></div>
+@if (showDetailsModal()) {
+<div id="plant-detail" style="position:fixed;inset:0;z-index:1500;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.4)" (click)="closePlantDetail()"></div>
   <div
     style="position:absolute;left:0;top:0;bottom:0;width:480px;background:white;overflow-y:auto;box-shadow:var(--shadow-xl)">
-    <div
-      style="background:linear-gradient(135deg,#fff5f5,#fee2e2);padding:1.5rem;display:flex;gap:1rem;align-items:center">
-      <div style="font-size:3.5rem"></div>
-      <div style="flex:1">
-        <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:var(--green-900)">طماطمي
-          الحلوة</div>
-        <div style="font-size:.82rem;color:var(--neutral-500)">طماطم · شرفة · زُرعت 15 مارس 2025</div>
-        <span class="badge badge-green" style="margin-top:.3rem">صحية</span>
+    @if (detailsLoading()) {
+       <div style="padding: 3rem; text-align:center;">جاري تحميل تفاصيل النبتة...</div>
+    } @else if (selectedPlantDetails()) {
+      <div
+        style="background:linear-gradient(135deg,#fff5f5,#fee2e2);padding:1.5rem;display:flex;gap:1rem;align-items:center">
+        <!-- Plant Icon or Image -->
+        <div style="width:60px;height:60px;background:white;border-radius:50%;overflow:hidden;flex-shrink:0;">
+           <img *ngIf="selectedPlantDetails()?.plant?.images?.[0]" [src]="getImageUrl(selectedPlantDetails()?.plant?.images[0])" style="width:100%;height:100%;object-fit:cover">
+        </div>
+        <div style="flex:1">
+          <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:var(--green-900)">
+            {{ selectedPlantDetails()?.plant?.commonName }}
+          </div>
+          <div style="font-size:.82rem;color:var(--neutral-500)">
+            {{ selectedPlantDetails()?.plant?.family || 'غير مصنف' }} · زُرعت {{ selectedPlantDetails()?.addedAt | date:'dd MMM yyyy' }}
+          </div>
+          <span class="badge badge-green" style="margin-top:.3rem">صحية</span>
+        </div>
+        <button (click)="closePlantDetail()"
+          style="background:none;border:none;font-size:1.3rem;color:var(--neutral-400);cursor:pointer">✕</button>
       </div>
-      <button onclick="closePlantDetail()"
-        style="background:none;border:none;font-size:1.3rem;color:var(--neutral-400);cursor:pointer">✕</button>
-    </div>
-    <div style="padding:1.5rem">
 
-      <!-- Tabs -->
-      <div class="tabs-wrapper">
-        <div class="tabs">
-          <button class="tab-btn active" data-tab="plan">خطة النمو</button>
-          <button class="tab-btn" data-tab="disease">الأمراض</button>
-          <button class="tab-btn" data-tab="history">السجل</button>
-        </div>
-        <div class="tab-content active" data-tab="plan">
-          <div class="grid-2" style="margin-bottom:1rem">
-            <div style="background:var(--green-50);border-radius:var(--radius-md);padding:1rem;text-align:center">
-              <div style="font-size:1.5rem"></div>
-              <div style="font-weight:700;color:var(--green-800)">بكره</div>
-              <div style="font-size:.78rem;color:var(--neutral-500)">الري الجاي</div>
-            </div>
-            <div style="background:var(--amber-100);border-radius:var(--radius-md);padding:1rem;text-align:center">
-              <div style="font-size:1.5rem"></div>
-              <div style="font-weight:700;color:var(--amber-500)">20 أبريل</div>
-              <div style="font-size:.78rem;color:var(--neutral-500)">التسميد الجاي</div>
-            </div>
+      <div style="padding:1.5rem">
+        <!-- Tabs -->
+        <div class="tabs-wrapper">
+          <div class="tabs">
+            <button class="tab-btn" [class.active]="activeTab() === 'plan'" (click)="activeTab.set('plan')">خطة النمو</button>
+            <button class="tab-btn" [class.active]="activeTab() === 'disease'" (click)="activeTab.set('disease')">الأمراض</button>
+            <button class="tab-btn" [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">السجل</button>
           </div>
-          <div class="section-mini-title"
-            style="font-size:.75rem;font-weight:700;color:var(--neutral-400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">
-            مراحل النمو</div>
-          <div class="timeline">
-            <div class="tl-item">
-              <div class="tl-dot done"></div>
-              <div style="font-size:.88rem"><strong>بذرة</strong> — 1 مارس<div
-                  style="color:var(--neutral-500);font-size:.8rem">اكتملت </div>
+
+          <!-- Plan Tab -->
+          @if (activeTab() === 'plan') {
+          <div class="tab-content active">
+            <div class="grid-2" style="margin-bottom:1rem">
+              <div style="background:var(--green-50);border-radius:var(--radius-md);padding:1rem;text-align:center">
+                <div style="font-weight:700;color:var(--green-800)">{{ (selectedPlantDetails().wateringSchedule?.[0] | date:'MMM d') || 'غير محدد' }}</div>
+                <div style="font-size:.78rem;color:var(--neutral-500)">الري القادم</div>
+              </div>
+              <div style="background:var(--amber-100);border-radius:var(--radius-md);padding:1rem;text-align:center">
+                <div style="font-weight:700;color:var(--amber-500)">{{ selectedPlantDetails().plant?.temperatureRange?.min || '-' }} - {{ selectedPlantDetails().plant?.temperatureRange?.max || '-' }}°م</div>
+                <div style="font-size:.78rem;color:var(--neutral-500)">الحرارة المناسبة</div>
               </div>
             </div>
-            <div class="tl-item">
-              <div class="tl-dot done"></div>
-              <div style="font-size:.88rem"><strong>شتلة</strong> — 15 مارس<div
-                  style="color:var(--neutral-500);font-size:.8rem">اكتملت </div>
-              </div>
-            </div>
-            <div class="tl-item">
-              <div class="tl-dot done"></div>
-              <div style="font-size:.88rem"><strong>نمو خضري</strong> — 1 أبريل<div
-                  style="color:var(--neutral-500);font-size:.8rem">اكتملت </div>
-              </div>
-            </div>
-            <div class="tl-item">
-              <div class="tl-dot current"></div>
-              <div style="font-size:.88rem"><strong style="color:var(--amber-500)">إثمار</strong> — الآن<div
-                  style="color:var(--neutral-500);font-size:.8rem">أنت هنا — 78% مكتملة</div>
-              </div>
-            </div>
-            <div class="tl-item">
-              <div class="tl-dot future"></div>
-              <div style="font-size:.88rem;color:var(--neutral-400)"><strong>حصاد</strong> — تقريباً 15 مايو</div>
+
+            <div class="section-mini-title" style="font-size:.75rem;font-weight:700;color:var(--neutral-400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">مراحل النمو</div>
+            <div class="timeline">
+              @for (stage of selectedPlantDetails().calculatedGrowthPlan; track stage._id || stage.stageName) {
+                 <div class="tl-item">
+                   <div class="tl-dot" [class.done]="stage.isCompleted" [class.current]="!stage.isCompleted"></div>
+                   <div style="font-size:.88rem">
+                     <strong>{{ stage.stageName }}</strong>
+                     <div style="color:var(--neutral-500);font-size:.8rem">{{ stage.startDate | date:'dd MMM yyyy' }} - {{ stage.endDate | date:'dd MMM' }}</div>
+                   </div>
+                 </div>
+              }
             </div>
           </div>
-        </div>
-        <div class="tab-content" data-tab="disease">
-          <div style="margin-bottom:1rem">
-            <div style="font-size:.88rem;color:var(--neutral-600);margin-bottom:.75rem">اختر مرضاً تعانيه نبتتك للحصول
-              على خطة علاج:</div>
-            <select class="input-field" id="disease-select" onchange="showTreatment()">
-              <option value="">— اختر المرض —</option>
-              <option value="rot">عفن الجذور</option>
-              <option value="spot">التبقع البني</option>
-              <option value="powder">البياض الدقيقي</option>
-            </select>
-          </div>
-          <div id="treatment-plan" style="display:none">
-            <div class="alert alert-warning" style="margin-bottom:1rem">تم اكتشاف: <strong>عفن الجذور</strong></div>
-            <div style="font-weight:700;margin-bottom:.6rem;font-size:.9rem">خطة العلاج:</div>
-            <div style="font-size:.88rem;line-height:1.8;color:var(--neutral-700)">
-              1. أوقف الري فوراً لمدة 5 أيام<br>
-              2. أخرج النبتة من الأصيص واكشف على الجذور<br>
-              3. ارشّ جذور النبتة بمحلول الفطريات<br>
-              4. غيّر التربة بالكامل لتربة طازجة<br>
-              5. استأنف الري بكميات أقل
+          }
+
+          <!-- Diseases Tab -->
+          @if (activeTab() === 'disease') {
+            <div class="tab-content active">
+              @if (selectedPlantDetails().plant?.diseases?.length > 0) {
+                <div style="font-size:.88rem;color:var(--neutral-600);margin-bottom:.75rem">الأمراض المحتملة المرتبطة بهذه النبتة:</div>
+                @for (disease of selectedPlantDetails().plant.diseases; track disease._id) {
+                  <div class="alert alert-warning" style="margin-bottom:1rem;display:flex;flex-direction:column;gap:0.5rem">
+                    <div style="font-weight:700;">{{ disease.name }} ({{ disease.scientificName }})</div>
+                    @if (disease.symptoms) { <div style="font-size:.85rem"><strong>الأعراض:</strong> {{ disease.symptoms }}</div> }
+                    @if (disease.treatment) { <div style="font-size:.85rem"><strong>العلاج:</strong> {{ disease.treatment }}</div> }
+                    @if (disease.prevention) { <div style="font-size:.85rem"><strong>الوقاية:</strong> {{ disease.prevention }}</div> }
+                  </div>
+                }
+              } @else {
+                 <div style="text-align:center;color:var(--neutral-500);padding:2rem;">لا توجد أمراض مسجلة مرتبطة بهذه النبتة حالياً.</div>
+              }
             </div>
-            <div
-              style="margin-top:1rem;background:var(--green-50);border-radius:var(--radius-md);padding:.85rem;font-size:.85rem">
-              <strong>المنتجات المطلوبة:</strong>
-              <a routerLink="/shop" style="color:var(--green-600);font-weight:600"> مبيد الفطريات (70 ج.م) ←</a>
+          }
+
+          <!-- History Tab -->
+          @if (activeTab() === 'history') {
+            <div class="tab-content active">
+               <div style="text-align:center;color:var(--neutral-500);padding:2rem;">سجل النبتة سيظهر هنا قريباً.</div>
             </div>
-          </div>
-        </div>
-        <div class="tab-content" data-tab="history">
-          <div style="font-size:.88rem;color:var(--neutral-600);margin-bottom:.75rem">سجل الرعاية الكامل:</div>
-          <div style="display:flex;flex-direction:column;gap:.5rem">
-            <div
-              style="background:var(--green-50);border-radius:var(--radius-sm);padding:.65rem;font-size:.85rem;display:flex;justify-content:space-between">
-              <span> ري</span><span style="color:var(--neutral-500)">15 أبريل</span>
-            </div>
-            <div
-              style="background:var(--amber-100);border-radius:var(--radius-sm);padding:.65rem;font-size:.85rem;display:flex;justify-content:space-between">
-              <span> تسميد NPK</span><span style="color:var(--neutral-500)">10 أبريل</span>
-            </div>
-            <div
-              style="background:var(--green-50);border-radius:var(--radius-sm);padding:.65rem;font-size:.85rem;display:flex;justify-content:space-between">
-              <span> ري</span><span style="color:var(--neutral-500)">13 أبريل</span>
-            </div>
-            <div
-              style="background:#fef2f2;border-radius:var(--radius-sm);padding:.65rem;font-size:.85rem;display:flex;justify-content:space-between">
-              <span> تحذير حرارة — تم التصرف</span><span style="color:var(--neutral-500)">8 أبريل</span>
-            </div>
-            <div
-              style="background:var(--green-50);border-radius:var(--radius-sm);padding:.65rem;font-size:.85em;display:flex;justify-content:space-between">
-              <span> ري</span><span style="color:var(--neutral-500)">11 أبريل</span>
-            </div>
-          </div>
+          }
         </div>
       </div>
-    </div>
+    }
   </div>
 </div>
+}
 
 <!-- Add Plant Modal (Angular-powered) -->
 @if (showAddPlantModal) {
@@ -275,9 +242,9 @@
         } @else {
           <!-- Category Selection -->
           <div class="input-group">
-            <label>اختر تصنيف النبتة (Category)</label>
+            <label>عائلة النبتة (Family)</label>
             <select class="input-field" [value]="selectedCategory()" (change)="onCategoryChange($event)">
-              <option value="">— اختر التصنيف —</option>
+              <option value="">— جميع النباتات —</option>
               @for (cat of categories(); track cat) {
                 <option [value]="cat">{{ cat }}</option>
               }
@@ -287,7 +254,7 @@
           <!-- Plant Selection -->
           <div class="input-group" style="margin-top:1rem">
             <label>اختر النبتة</label>
-            <select class="input-field" [value]="selectedPlantId()" (change)="onPlantChange($event)" [disabled]="!selectedCategory()">
+            <select class="input-field" [value]="selectedPlantId()" (change)="onPlantChange($event)">
               <option value="">— اختر نبتة —</option>
               @for (plant of filteredPlants(); track plant._id) {
                 <option [value]="plant._id">{{ plant.commonName }}</option>

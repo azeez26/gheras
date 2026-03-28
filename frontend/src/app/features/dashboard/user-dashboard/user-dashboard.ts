@@ -51,9 +51,15 @@ export class UserDashboard implements OnInit {
   filteredPlants = computed(() => {
     const cat = this.selectedCategory();
     const plants = this.allPlants();
-    if (!cat) return [];
+    if (!cat) return plants; // Return all plants if no family is selected
     return plants.filter(p => (p.family || 'غير مصنف') === cat);
   });
+
+  // Plant Detail Side Drawer State
+  showDetailsModal = signal(false);
+  detailsLoading = signal(false);
+  selectedPlantDetails = signal<any>(null);
+  activeTab = signal<'plan' | 'disease' | 'history'>('plan');
 
   ngOnInit() {
     this.loadDashboardData();
@@ -139,6 +145,32 @@ export class UserDashboard implements OnInit {
         alert(msg);
       }
     });
+  }
+
+  // Plant Details Drawer Logic
+  openPlantDetail(id: string) {
+    this.showDetailsModal.set(true);
+    this.detailsLoading.set(true);
+    this.activeTab.set('plan');
+    
+    this.http.get<any>(`http://localhost:3000/api/dashboard/my-plant/${id}`).subscribe({
+      next: (res) => {
+        if (res.status === 'success') {
+          this.selectedPlantDetails.set(res.data.userPlant);
+        }
+        this.detailsLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading plant details:', err);
+        this.detailsLoading.set(false);
+      }
+    });
+  }
+
+  closePlantDetail() {
+    this.showDetailsModal.set(false);
+    // Optional: reset data, but maybe leave it for smooth closing animation
+    // this.selectedPlantDetails.set(null); 
   }
 
   // Calculate percentage of growth stage (Mock logic or use from DB)
