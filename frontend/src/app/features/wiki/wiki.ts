@@ -9,6 +9,7 @@ import { WikiService, WikiResponse } from '../../core/services/wiki.service';
   imports: [CommonModule, FormsModule],
   templateUrl: './wiki.html',
   styleUrl: './wiki.css',
+  encapsulation: ViewEncapsulation.None
 })
 export class Wiki implements OnInit {
   private wikiService = inject(WikiService);
@@ -249,7 +250,24 @@ export class Wiki implements OnInit {
   }
 
   closeModal() {
-    this.selectedPlant.set(null);
+    this.selectedItem.set(null);
+    this.itemType.set(null);
+    this.navigationHistory = [];
+  }
+
+  // Logic to find plants related to a specific disease or fertilizer
+  getRelatedPlants(itemId: string, type: 'disease' | 'fertilizer'): Plant[] {
+    return this.plants().filter(p => {
+      const field = type === 'disease' ? p.diseases : p.fertilizers;
+      return field?.some(ref => {
+        const refId = typeof ref === 'string' ? ref : (ref._id || ref.id);
+        return refId === itemId;
+      });
+    });
+  }
+
+  getId(item: any): string {
+    return item?._id || item?.id || '';
   }
 
   getImageUrl(path: string) {

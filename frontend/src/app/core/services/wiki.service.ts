@@ -28,6 +28,8 @@ export class WikiService {
   getDiseases(page: number = 1, limit: number = 15): Observable<WikiResponse> {
     return this.http.get<WikiResponse>(`${this.baseUrl}/api/diseases?page=${page}&limit=${limit}`);
   }
+  updatePlant(id: string, plantData: any, images: File[] = []): Observable<Plant> {
+    const formData = new FormData();
 
   getFertilizers(page: number = 1, limit: number = 15): Observable<WikiResponse> {
     return this.http.get<WikiResponse>(`${this.baseUrl}/api/fertilizers?page=${page}&limit=${limit}`);

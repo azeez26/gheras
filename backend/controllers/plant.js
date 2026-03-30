@@ -14,6 +14,7 @@ exports.getAllPlants = catchAsync(async (req, res, next) => {
         .select("commonName scientificName images family sunlightHours waterNeeds temperatureRange")
         .populate("fertilizers", "name")
         .populate("diseases", "name")
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
 
