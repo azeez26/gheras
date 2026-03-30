@@ -19,7 +19,7 @@ async function authentication (req, res, next){
         role: decodedToken.role
     };
 
-        console.log(decodedToken)
+        // console.log(decodedToken)
 
         next()
         
