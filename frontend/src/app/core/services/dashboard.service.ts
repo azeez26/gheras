@@ -81,4 +81,12 @@ export class DashboardService {
   deleteFertilizerAdmin(id: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/fertilizers/${id}`);
   }
+
+  getUsersAdmin(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/users`);
+  }
+
+  deleteUserAdmin(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/users/${id}`);
+  }
 }

@@ -158,110 +158,250 @@
     font-weight: 600;
 }
 
-/* ── Modal ── */
+/* ── Detailed Modal ── */
 .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(5, 41, 27, 0.6);
-    backdrop-filter: blur(8px);
-    z-index: 2000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(8px) !important;
+    z-index: 9999 !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 1rem !important;
 }
 
 .modal-overlay.active {
-    display: flex;
+    display: flex !important;
 }
 
 .modal-box {
-    background: white;
-    width: 100%;
-    max-width: 600px;
-    max-height: 90vh;
-    border-radius: var(--radius-xl);
-    overflow-y: auto;
-    position: relative;
-    box-shadow: var(--shadow-xl);
+    background: white !important;
+    width: 95% !important;
+    max-width: 850px !important; 
+    max-height: 80vh !important;
+    border-radius: 1.5rem !important;
+    overflow-y: auto !important;
+    position: relative !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
 }
 
+.close-modal-floating, .back-modal-floating {
+    position: absolute !important;
+    top: 1rem !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: white !important;
+    border: 1px solid #ddd !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-size: 1.1rem !important;
+    z-index: 100 !important;
+}
+
+.close-modal-floating { right: 1rem !important; }
+.back-modal-floating { left: 1rem !important; }
+
+/* Header Sections - صغرناهم */
 .modal-header-img {
-    height: 300px;
+    height: 180px !important;
+    width: 100% !important;
 }
 
 .modal-header-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
 }
 
-.close-modal-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: white;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-md);
-    cursor: pointer;
-    font-size: 1.5rem;
+.modal-header-banner {
+    height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
+.modal-header-banner.disease { background: linear-gradient(135deg, #e11d48, #9f1239) !important; }
+.modal-header-banner.fert { background: linear-gradient(135deg, #059669, #064e3b) !important; }
+
+.banner-emoji {
+    font-size: 2.5rem !important;
+}
+
+/* Content Layout - تصغير المكونات الداخلية */
 .modal-content {
-    padding: 2.5rem;
+    padding: 1.5rem 2.5rem !important;
 }
 
-.modal-title {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    color: var(--green-900);
-    margin-bottom: 2rem;
+.detail-header {
+    margin-bottom: 1.5rem !important;
+    border-bottom: 1px solid var(--neutral-100) !important;
+    padding-bottom: 0.75rem !important;
 }
 
-.features-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+.detail-title {
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    color: var(--green-900) !important;
+    margin-bottom: 0.2rem !important;
 }
 
-.feature-item {
-    background: var(--neutral-50);
-    padding: 1.25rem;
-    border-radius: var(--radius-lg);
+.detail-subtitle {
+    font-size: 0.85rem !important;
+}
+
+/* Info Grid */
+.info-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+    margin-bottom: 2rem !important;
+}
+
+.info-item {
+    background: var(--neutral-50) !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 1rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    border: 1px solid var(--neutral-100) !important;
+}
+
+.info-icon {
+    font-size: 1.1rem !important;
+    background: white !important;
+    width: 34px !important;
+    height: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 0.75rem !important;
+}
+
+.info-text {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: column;
 }
 
-.feature-label {
+.info-text .label {
     font-size: 0.75rem;
     color: var(--neutral-500);
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-.feature-value {
-    color: var(--green-800);
-    font-weight: 700;
-}
-
-.description-title {
+.info-text .val {
+    font-size: 1.1rem;
+    font-weight: 800;
     color: var(--green-900);
-    margin-bottom: 1rem;
-    font-weight: 700;
 }
+
+/* Detail Sections */
+.detail-section {
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--green-900);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-title::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: var(--neutral-100);
+}
+
+.section-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--neutral-700);
+}
+
+.detail-list {
+    list-style: none;
+    padding: 0;
+}
+
+.detail-list li {
+    padding: 0.75rem 0;
+    color: var(--neutral-700);
+    border-bottom: 1px dashed var(--neutral-200);
+}
+
+.detail-list li::before {
+    content: '•';
+    color: var(--green-500);
+    font-weight: bold;
+    margin-left: 0.75rem;
+}
+
+/* Composition Tags */
+.comp-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.comp-tag {
+    background: var(--green-50);
+    color: var(--green-700);
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: 1px solid var(--green-100);
+}
+
+/* Interconnected Links */
+.detail-links {
+    background: var(--neutral-50);
+    padding: 2rem;
+    border-radius: 1.5rem;
+    margin-top: 2rem;
+}
+
+.link-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.link-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-lg);
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.link-btn:hover {
+    transform: scale(1.05);
+}
+
+.link-btn.disease { background: #fee2e2; color: #991b1b; }
+.link-btn.fert { background: #dcfce7; color: #166534; }
+.link-btn.plant { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
 
 @media (max-width: 640px) {
-    .grid-auto {
-        grid-template-columns: 1fr;
-    }
-
-    .features-grid {
-        grid-template-columns: 1fr;
-    }
+    .modal-content { padding: 1.5rem; }
+    .info-grid { grid-template-columns: 1fr; }
+    .detail-title { font-size: 1.8rem; }
 }
 
 /* ── Wiki Table ── */

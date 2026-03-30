@@ -8,7 +8,7 @@
     </a>
 
     <!-- إدارة النباتات -->
-    <div class="sidebar-section-title">إدارة النباتات</div>
+    <div class="sidebar-section-title">إدارة النباتات(الويكي)</div>
 
     <div class="sidebar-group">
       <a (click)="toggleSection('plants')" class="sidebar-link has-chevron" style="cursor: pointer;">
@@ -76,9 +76,6 @@
 
     <!-- إدارة المحتوى -->
     <div class="sidebar-section-title">إدارة المحتوى</div>
-    <a (click)="setView('wiki')" [class.active]="activeView === 'wiki'" class="sidebar-link" style="cursor: pointer;">
-      <span class="icon">📖</span> الويكي
-    </a>
     <a (click)="setView('forum')" [class.active]="activeView === 'forum'" class="sidebar-link" style="cursor: pointer;">
       <span class="icon">💬</span> المنتدى
     </a>
@@ -90,35 +87,35 @@
     <ng-container *ngIf="activeView === 'stats'">
       <div style="margin-bottom:1.5rem">
         <div class="page-title">لوحة الإدارة</div>
-        <div class="page-subtitle">الثلاثاء، 15 أبريل 2025</div>
+        <div class="page-subtitle">{{ currentDate | date:'fullDate':'':'ar-EG' }}</div>
       </div>
 
       <!-- Stats -->
       <div class="stats-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:2rem">
-        <div class="stat-card">
-          <div class="stat-icon" style="background:var(--green-50)"></div>
-          <div class="stat-value">12,480</div>
+        <div class="stat-card" (click)="setView('users')" style="cursor: pointer; transition: transform 0.2s;">
+          <div class="stat-icon" style="background:#f0fdf4">👥</div>
+          <div class="stat-value">{{ allUsers?.length || 0 }}</div>
           <div class="stat-label">إجمالي المستخدمين</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:var(--amber-100)"></div>
-          <div class="stat-value">1,234</div>
+          <div class="stat-icon" style="background:#fffbeb">⭐</div>
+          <div class="stat-value">{{ premiumCount }}</div>
           <div class="stat-label">مشتركو البريميوم</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:#dcfce7"></div>
-          <div class="stat-value">38,920</div>
+          <div class="stat-icon" style="background:#f0fdf4">🌱</div>
+          <div class="stat-value">{{ adminStats?.catalog?.plants || 0 }}</div>
           <div class="stat-label">نباتات مضافة</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:#fef9c3"></div>
-          <div class="stat-value">7</div>
-          <div class="stat-label">بوستات تنتظر موافقة</div>
+          <div class="stat-icon" style="background:#fef9c3">✅</div>
+          <div class="stat-value">{{ adminStats?.sales?.deliveredOrders || 0 }}</div>
+          <div class="stat-label">طلبات مكتملة</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:#dbeafe"></div>
-          <div class="stat-value">4</div>
-          <div class="stat-label">طلبات جديدة</div>
+          <div class="stat-icon" style="background:#eff6ff">💰</div>
+          <div class="stat-value">{{ adminStats?.financials?.totalRevenueEGP || 0 }}</div>
+          <div class="stat-label">إجمالي المبيعات (ج.م)</div>
         </div>
       </div>
 
@@ -142,63 +139,57 @@
             </div>
             <div style="margin-top:1rem;display:flex;gap:1rem">
               <div>
-                <div style="font-size:1.3rem;font-weight:800;color:var(--green-700)">+248</div>
-                <div style="font-size:.78rem;color:var(--neutral-500)">مستخدم جديد الأسبوع</div>
+                <div style="font-size:1.3rem;font-weight:800;color:var(--green-700)">{{ adminStats?.sales?.soldProducts
+                  || 0 }}</div>
+                <div style="font-size:.78rem;color:var(--neutral-500)">إجمالي المنتجات المباعة</div>
               </div>
               <div>
-                <div style="font-size:1.3rem;font-weight:800;color:var(--amber-500)">+32</div>
-                <div style="font-size:.78rem;color:var(--neutral-500)">اشتراك بريميوم جديد</div>
+                <div style="font-size:1.3rem;font-weight:800;color:var(--amber-500)">{{
+                  adminStats?.financials?.netProfit || 0 }}</div>
+                <div style="font-size:.78rem;color:var(--neutral-500)">صافي الأرباح (Net Profit)</div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Top plants -->
+        <!-- Catalog details -->
         <div class="card">
           <div class="card-body">
-            <div style="font-weight:700;margin-bottom:1rem;color:var(--green-900)">أكثر النباتات إضافةً</div>
+            <div style="font-weight:700;margin-bottom:1rem;color:var(--green-900)">تفاصيل الموسوعة والمتجر</div>
             <div style="display:flex;flex-direction:column;gap:.6rem">
               <div style="display:flex;align-items:center;gap:.75rem">
-                <span style="font-size:1.2rem"></span>
+                <span class="fs-4">🛍️</span>
                 <div style="flex:1">
                   <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.25rem">
-                    <span>الطماطم</span><span style="font-weight:700">8,240</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width:82%"></div>
+                    <span>عدد المنتجات بالمتجر</span><span style="font-weight:700">{{ adminStats?.catalog?.products || 0
+                      }}</span>
                   </div>
                 </div>
               </div>
               <div style="display:flex;align-items:center;gap:.75rem">
-                <span style="font-size:1.2rem"></span>
+                <span class="fs-4">🦠</span>
                 <div style="flex:1">
                   <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.25rem">
-                    <span>الكاكتوس</span><span style="font-weight:700">7,100</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width:71%"></div>
+                    <span>عدد الأمراض المسجلة</span><span style="font-weight:700">{{ adminStats?.catalog?.diseases || 0
+                      }}</span>
                   </div>
                 </div>
               </div>
               <div style="display:flex;align-items:center;gap:.75rem">
-                <span style="font-size:1.2rem"></span>
+                <span class="fs-4">💊</span>
                 <div style="flex:1">
                   <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.25rem">
-                    <span>الورد الجوري</span><span style="font-weight:700">5,900</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width:59%"></div>
+                    <span>عدد الأسمدة المسجلة</span><span style="font-weight:700">{{ adminStats?.catalog?.fertilizers ||
+                      0 }}</span>
                   </div>
                 </div>
               </div>
               <div style="display:flex;align-items:center;gap:.75rem">
-                <span style="font-size:1.2rem"></span>
+                <span class="fs-4">📁</span>
                 <div style="flex:1">
                   <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.25rem">
-                    <span>النعناع</span><span style="font-weight:700">4,200</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width:42%"></div>
+                    <span>التصنيفات المتاحة</span><span style="font-weight:700">{{ adminStats?.catalog?.categories || 0
+                      }}</span>
                   </div>
                 </div>
               </div>
@@ -207,7 +198,7 @@
         </div>
       </div>
 
-      <!-- Forum Moderation -->
+      <!-- Forum Moderation / Or any other components can follow -->
       <div class="page-title" style="font-size:1.05rem;margin-bottom:1rem">بوستات المنتدى — تنتظر الموافقة (7)</div>
       <div class="table-wrap" style="margin-bottom:2rem">
         <table class="data-table">
@@ -928,11 +919,6 @@
       <p class="text-secondary">جاري تحميل قائمة المنتجات...</p>
     </div>
 
-    <div *ngIf="activeView === 'wiki'" class="card p-4 text-center">
-      <h2 class="text-success fw-bold">إدارة الويكي</h2>
-      <p class="text-secondary">هنا يمكنك إدارة محتوى الويكي.</p>
-    </div>
-
     <div *ngIf="activeView === 'forum'" class="card p-4 text-center">
       <h2 class="text-success fw-bold">إدارة المنتدى</h2>
       <p class="text-secondary">هنا يمكنك مراجعة وحذف بوستات المنتدى.</p>
@@ -1167,7 +1153,8 @@
             </div>
             <div class="col-md-4">
               <label class="form-label fw-bold text-secondary">نسبة الخصم (%)</label>
-              <input type="number" class="form-control" [(ngModel)]="productForm.discountPercent" name="editProdDiscount">
+              <input type="number" class="form-control" [(ngModel)]="productForm.discountPercent"
+                name="editProdDiscount">
             </div>
           </div>
           <div class="mb-3">
@@ -1202,6 +1189,75 @@
               🗑️ مسح الآن
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- إدارة المستخدمين -->
+    <div *ngIf="activeView === 'users'" class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <h2 class="mb-4 text-success fw-bold">إدارة شؤون المستخدمين</h2>
+
+        <!-- قسم المشرفين -->
+        <h5 class="text-primary fw-bold mb-3"><span class="icon">🛡️</span> طاقم الإدارة (Admins)</h5>
+        <div class="table-wrap mb-5">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>الاسم</th>
+                <th>الإيميل</th>
+                <th>اسم المستخدم</th>
+                <th>الدور</th>
+                <th>تاريخ الانضمام</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let admin of adminUsers" class="bg-primary-subtle">
+                <td class="fw-bold">{{ admin.firstName }} {{ admin.lastName }}</td>
+                <td>{{ admin.email }}</td>
+                <td>@{{ admin.username }}</td>
+                <td><span class="badge bg-primary">مدير (Admin)</span></td>
+                <td>{{ admin.createdAt | date:'shortDate' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- قسم المستخدمين العاديين -->
+        <h5 class="text-success fw-bold mb-3"><span class="icon">👥</span> المستخدمين (Users)</h5>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>الاسم</th>
+                <th>الإيميل</th>
+                <th>الحالة</th>
+                <th>تاريخ التسجيل</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of regularUsers">
+                <td class="fw-bold">{{ user.firstName }} {{ user.lastName }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  <span *ngIf="user.isVerified" class="badge bg-success">محقق</span>
+                  <span *ngIf="!user.isVerified" class="badge bg-warning text-dark">غير محقق</span>
+                  <span *ngIf="user.premium" class="badge bg-primary ms-1">Premium ⭐</span>
+                </td>
+                <td>{{ user.createdAt | date:'shortDate' }}</td>
+                <td>
+                  <button (click)="deleteUser(user._id || user.id, user.firstName + ' ' + user.lastName)"
+                    class="btn btn-sm btn-outline-danger">
+                    🗑️ حذف
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="regularUsers.length === 0">
+                <td colspan="5" class="text-center p-4">لا يوجد مستخدمين حالياً</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

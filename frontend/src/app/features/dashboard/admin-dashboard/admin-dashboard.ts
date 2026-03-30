@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -12,6 +12,7 @@ import { ChangeDetectorRef } from '@angular/core';
   imports: [CommonModule, FormsModule],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
+  encapsulation: ViewEncapsulation.None
 })
 export class AdminDashboard implements OnInit {
   private dashboardService = inject(DashboardService);
@@ -60,6 +61,21 @@ export class AdminDashboard implements OnInit {
   allProducts: any[] = [];
   selectedProductId: string = '';
   productToDeleteId: string = '';
+
+  // ==================== USER MANAGEMENT ====================
+  allUsers: any[] = [];
+
+  get regularUsers() {
+    return this.allUsers.filter(u => u.role !== 'admin');
+  }
+
+  get adminUsers() {
+    return this.allUsers.filter(u => u.role === 'admin');
+  }
+
+  get premiumCount(): number {
+    return this.allUsers.filter(u => u.premium === true).length;
+  }
 
   deletePlant() {
     if (!this.plantToDeleteId) {
@@ -137,27 +153,46 @@ export class AdminDashboard implements OnInit {
   }
 
   deleteProduct() {
-      if (!this.productToDeleteId) {
-          alert('الرجاء اختيار منتج لحذفه أولاً');
-          return;
-      }
-      const product = this.allProducts.find(p => (p._id || p.id) === this.productToDeleteId);
-      const productName = product ? product.name : 'هذا المنتج';
+    if (!this.productToDeleteId) {
+      alert('الرجاء اختيار منتج لحذفه أولاً');
+      return;
+    }
+    const product = this.allProducts.find(p => (p._id || p.id) === this.productToDeleteId);
+    const productName = product ? product.name : 'هذا المنتج';
 
-      if (confirm(`هل أنت متأكد من رغبتك في حذف "${productName}"؟`)) {
-          this.dashboardService.deleteProductAdmin(this.productToDeleteId).subscribe({
-              next: () => {
-                  alert('تم حذف المنتج بنجاح 🗑️');
-                  this.productToDeleteId = '';
-                  this.loadAllData();
-                  this.setView('stats');
-              },
-              error: (err) => {
-                  console.error('Delete error:', err);
-                  alert('حدث خطأ أثناء الحذف');
-              }
-          });
-      }
+    if (confirm(`هل أنت متأكد من رغبتك في حذف "${productName}"؟`)) {
+      this.dashboardService.deleteProductAdmin(this.productToDeleteId).subscribe({
+        next: () => {
+          alert('تم حذف المنتج بنجاح 🗑️');
+          this.productToDeleteId = '';
+          this.loadAllData();
+          this.setView('stats');
+        },
+        error: (err) => {
+          console.error('Delete error:', err);
+          alert('حدث خطأ أثناء الحذف');
+        }
+      });
+    }
+  }
+
+  deleteUser(userId: string, userName: string) {
+    if (confirm(`هل أنت متأكد من رغبتك في حذف المستخدم "${userName}"؟ لا يمكن التراجع عن هذا الإجراء.`)) {
+      this.dashboardService.deleteUserAdmin(userId).subscribe({
+        next: () => {
+          alert('تم حذف المستخدم بنجاح 🗑️');
+          // Update local list instantly without refresh
+          this.allUsers = this.allUsers.filter(u => (u._id || u.id) !== userId);
+          // Refresh total counts
+          this.loadAllData();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Delete user error:', err);
+          alert('حدث خطأ أثناء حذف المستخدم: ' + (err.error?.message || 'تأكد من الصلاحيات'));
+        }
+      });
+    }
   }
 
   // -------------------- PLANT FORM --------------------
@@ -198,40 +233,52 @@ export class AdminDashboard implements OnInit {
   categoryForm: any = { name: '', slug: '', description: '' };
 
   // ==================== INIT ====================
+  adminStats: any = null;
+  currentDate: Date = new Date();
+
   ngOnInit() {
     this.loadAllData();
   }
 
   loadAllData() {
+    this.dashboardService.getAdminStats().subscribe({
+      next: (res: any) => {
+        console.log('Admin Stats Response:', res); // لتشوف الشكل الحقيقي
+        this.adminStats = res?.stats || res?.data || res || null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => { console.error('Error fetching admin stats:', err); }
+    });
+
     this.wikiService.getPlants(1, 200).subscribe({
-      next: (res) => {
-        const plants = res.data?.plants || res.data || res || [];
-        console.log('🌱 All Plants fetched:', plants);
-        this.allPlants = plants;
+      next: (res: any) => {
+        this.allPlants = res?.data?.plants || res?.data || res || [];
       },
       error: (err) => { console.error('Error fetching plants:', err); }
     });
     this.wikiService.getDiseases(1, 100).subscribe({
-      next: (res) => {
-        const diseases = res.data?.diseases || res.data || res || [];
-        this.allDiseases = diseases;
+      next: (res: any) => {
+        this.allDiseases = res?.data?.diseases || res?.data || res || [];
       },
       error: (err) => { console.error('Error fetching diseases:', err); }
     });
     this.wikiService.getFertilizers(1, 100).subscribe({
-      next: (res) => {
-        const fertilizers = res.data?.fertilizers || res.data || res || [];
-        this.allFertilizers = fertilizers;
+      next: (res: any) => {
+        this.allFertilizers = res?.data?.fertilizers || res?.data || res || [];
       },
       error: (err) => { console.error('Error fetching fertilizers:', err); }
     });
     this.http.get<any>(`${this.base}/category`).subscribe({
-      next: (res) => { this.allCategories = res.data || res || []; },
+      next: (res: any) => { this.allCategories = res?.data || res || []; },
       error: () => { }
     });
     this.http.get<any>(`${this.base}/product`).subscribe({
-      next: (res) => { this.allProducts = res.data || res || []; },
+      next: (res: any) => { this.allProducts = res?.data || res || []; },
       error: () => { }
+    });
+    this.dashboardService.getUsersAdmin().subscribe({
+      next: (res: any) => { this.allUsers = res?.data || res || []; },
+      error: (err) => { console.error('Error fetching users:', err); }
     });
   }
 
@@ -458,13 +505,13 @@ export class AdminDashboard implements OnInit {
     if (this.diseaseForm.scientificName) body.scientificName = this.diseaseForm.scientificName;
     if (this.diseaseForm.pathogenType) body.pathogenType = this.diseaseForm.pathogenType;
     if (this.diseaseForm.favorableConditions) body.favorableConditions = this.diseaseForm.favorableConditions;
-    
+
     const symptoms = this.lines(this.diseaseForm.symptomsText);
     if (symptoms.length > 0) body.symptoms = symptoms;
-    
+
     const prevention = this.lines(this.diseaseForm.preventionText);
     if (prevention.length > 0) body.prevention = prevention;
-    
+
     const treatment = this.lines(this.diseaseForm.treatmentText);
     if (treatment.length > 0) body.treatment = treatment;
 

@@ -132,8 +132,12 @@ export interface Blog {
 }
 
 export interface DashboardStats {
-  totalUsers?: number;
-  totalOrders?: number;
-  totalRevenue?: number;
-  totalPlants?: number;
+  success?: boolean;
+  stats?: {
+    users?: { total: number; premium: number; regular: number };
+    financials?: { netProfit: number; totalRevenueEGP: number; totalSuccessfulPayments: number };
+    catalog?: { products: number; plants: number; diseases: number; fertilizers: number; categories: number; blogs: number };
+    community?: { posts: number; comments: number };
+    sales?: { soldProducts: number; deliveredOrders: number; pendingOrders: number };
+  };
 }
