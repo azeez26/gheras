@@ -96,7 +96,7 @@ export class Wiki implements OnInit {
 
   private finalizeLoading(filter: string) {
     if (filter === 'all') {
-      this.totalPages = 1; 
+      this.totalPages = 1;
     }
     this.loading.set(false);
   }
@@ -174,8 +174,8 @@ export class Wiki implements OnInit {
     // Client-side search
     if (this.searchQuery) {
       const q = this.searchQuery.toLowerCase();
-      combined = combined.filter(item => 
-        item.displayName?.toLowerCase().includes(q) || 
+      combined = combined.filter(item =>
+        item.displayName?.toLowerCase().includes(q) ||
         item.displaySub?.toLowerCase().includes(q)
       );
     }
@@ -215,8 +215,8 @@ export class Wiki implements OnInit {
     if (item.type === 'plant') {
       this.wikiService.getPlantById(item._id).subscribe(res => {
         const p = res.data.plant;
-        this.selectedPlant.set({ 
-          ...p, 
+        this.selectedPlant.set({
+          ...p,
           type: 'plant',
           name: p.commonName || 'نبتة جديدة',
           scientificName: p.scientificName || 'Phaseolus',
@@ -228,8 +228,8 @@ export class Wiki implements OnInit {
     } else if (item.type === 'disease') {
       this.wikiService.getDiseaseById(item._id).subscribe(res => {
          const d = res.data.disease;
-         this.selectedPlant.set({ 
-           ...d, 
+         this.selectedPlant.set({
+           ...d,
            type: 'disease',
            name: d.name || 'مرض',
            scientificName: d.scientificName || 'مرض نباتي'
@@ -238,8 +238,8 @@ export class Wiki implements OnInit {
     } else if (item.type === 'fertilizer') {
       this.wikiService.getFertilizerById(item._id).subscribe(res => {
         const f = res.data.fertilizer;
-        this.selectedPlant.set({ 
-          ...f, 
+        this.selectedPlant.set({
+          ...f,
           type: 'fertilizer',
           name: f.name || 'سماد',
           scientificName: f.type || 'سماد عضوي'
