@@ -38,10 +38,16 @@ export class Login {
         this.status = 'success';
         console.log('Logged in successfully', res);
 
-        // جلب المستخدم الحالي لمعرفة صلاحياته
+        // جلب المستخدم لتقرير الوجهة المناسبة بناءً على دوره
         const user = this.authService.currentUser();
-        if (user?.role === 'admin') {
+        const role = user?.role?.toLowerCase();
+
+        if (role === 'admin') {
           this.router.navigate(['/dashboard/admin']);
+        } else if (role === 'specialist') {
+          this.router.navigate(['/dashboard/specialist']);
+        } else if (role === 'premium') {
+          this.router.navigate(['/dashboard/premium']);
         } else {
           this.router.navigate(['/dashboard']);
         }

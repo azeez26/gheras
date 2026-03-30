@@ -11,39 +11,90 @@ export interface User {
 }
 
 export interface Plant {
-  _id?: string;
-  name: string;
-  description: string;
-  wateringSchedule: string;
-  sunlight: string;
-  imageUrl?: string;
-  diseases?: Disease[];
-  fertilizers?: Fertilizer[];
+  _id: string;
+  id?: string;
+  commonName: string;
+  name?: string;
+  scientificName: string;
+  family?: string;
+  description?: string;
+  images: string[];
+  growingSeason?: string;
+  temperatureRange?: {
+    min?: number;
+    max?: number;
+  };
+  sunlightHours?: number;
+  soilPH?: {
+    min?: number;
+    max?: number;
+  };
+  waterNeeds?: {
+    level?: string;
+    frequency?: number;
+  };
+  nutritionalValue?: string;
+  fertilizers: any[];
+  diseases: any[];
+  potSizeOptions?: {
+    plantType: string;
+    min: number;
+    max: number;
+    unit: string;
+  }[];
+  growthStages?: {
+    name: string;
+    durationInDays: number;
+    description?: string;
+  }[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Disease {
-  _id?: string;
+  _id: string;
+  id?: string;
   name: string;
   symptoms: string;
   treatment: string;
 }
 
 export interface Fertilizer {
-  _id?: string;
+  _id: string;
+  id?: string;
   name: string;
   type: string;
   usageInstructions: string;
 }
 
+// export interface Product {
+//   _id?: string;
+//   name: string;
+//   price: number;
+//   description: string;
+//   images: string;
+//   category: Category | string;
+//   stock: number;
+// }
+
 export interface Product {
-  _id?: string;
+  _id: string;
   name: string;
-  price: number;
   description: string;
-  imageUrl?: string;
-  category: Category | string;
+  category: Category;
+  price: number;
+  discountPercent: number;
+  finalPrice: number;
   stock: number;
+  images: string[];
+  relatedProducts: any[];
+  isActive: boolean;
+  costPrice: number;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
+
 
 export interface Category {
   _id?: string;
@@ -53,6 +104,7 @@ export interface Category {
 export interface CartItem {
   product: Product;
   quantity: number;
+  price?: number;
 }
 
 export interface Cart {
@@ -99,8 +151,12 @@ export interface Blog {
 }
 
 export interface DashboardStats {
-  totalUsers?: number;
-  totalOrders?: number;
-  totalRevenue?: number;
-  totalPlants?: number;
+  success?: boolean;
+  stats?: {
+    users?: { total: number; premium: number; regular: number };
+    financials?: { netProfit: number; totalRevenueEGP: number; totalSuccessfulPayments: number };
+    catalog?: { products: number; plants: number; diseases: number; fertilizers: number; categories: number; blogs: number };
+    community?: { posts: number; comments: number };
+    sales?: { soldProducts: number; deliveredOrders: number; pendingOrders: number };
+  };
 }

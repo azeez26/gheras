@@ -1,11 +1,8 @@
 const jwt = require('jsonwebtoken')
 const util = require('util')
 
-//Abo Sofyan
-async function authentication (req, res, next) {
-    // جرب تجيب token من Authorization header أو من token header
-    let authHeader = req.headers['authorization'];
-    let token = authHeader ? authHeader.split(' ')[1] : req.headers['token'];
+    // Support both standard "Authorization: Bearer <token>" and legacy "token: <token>" header
+    let token = req.headers['authorization']?.split(' ')[1] || req.headers['token'];
 
     if (!token) {
        return res.status(401).json({ message: "Please login first" })
@@ -15,9 +12,12 @@ async function authentication (req, res, next) {
         let decodedToken = await util.promisify(jwt.verify)(token, process.env.SECRET_KEY)
         console.log(decodedToken);
         req.user = {
-            id: decodedToken.id,
-            role: decodedToken.role
-        };
+        id: decodedToken.id,
+        role: decodedToken.role
+    };
+
+        // console.log(decodedToken)
+
         next()
     } catch (error) {
         console.log(error)

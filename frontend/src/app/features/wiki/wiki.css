@@ -30,10 +30,9 @@
 
 .wiki-hero h1 {
     font-family: var(--font-display);
-    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-size: clamp(2rem, 4vw, 3.5rem);
     font-weight: 800;
     margin-bottom: 1rem;
-    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .wiki-hero p {
@@ -71,6 +70,27 @@
     transform: scale(1.02);
 }
 
+.badge-light {
+    background: var(--neutral-50);
+    color: var(--neutral-600);
+    border: 1px solid var(--neutral-100);
+}
+
+.badge-green {
+    background: #e6f4ea;
+    color: #1e7e34;
+}
+
+.badge-earth {
+    background: #fff4e5;
+    color: #b56000;
+}
+
+.badge-secondary {
+    background: #eef2ff;
+    color: #4338ca;
+}
+
 .search-icon {
     position: absolute;
     right: 1.5rem;
@@ -85,103 +105,312 @@
 }
 
 /* ── Wiki Filter Tabs ── */
+.wiki-tabs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: white;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--neutral-100);
+}
+
 .wiki-tabs {
     display: flex;
     justify-content: center;
     gap: 0.75rem;
-    padding: 2.5rem 1rem;
-    flex-wrap: wrap;
-    background: white;
-    border-bottom: 1px solid var(--neutral-200);
-    position: sticky;
-    top: 68px;
-    z-index: 90;
+    overflow-x: auto;
+    padding: 0.5rem 1rem;
+    scrollbar-width: none;
+}
+
+.wiki-tabs::-webkit-scrollbar {
+    display: none;
 }
 
 .wiki-filter {
     padding: 0.6rem 1.5rem;
-    border-radius: var(--radius-full);
+    border-radius: 99px;
     border: 1px solid var(--neutral-200);
-    background: white;
+    background: #f8faf9;
     color: var(--neutral-700);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
     font-weight: 600;
-    font-size: 0.9rem;
-    transition: var(--transition);
-}
-
-.wiki-filter:hover {
-    border-color: var(--green-300);
-    color: var(--green-600);
-    background: var(--green-50);
 }
 
 .wiki-filter.active {
-    background: var(--green-600);
+    background: var(--green-700);
     color: white;
-    border-color: var(--green-600);
-    box-shadow: 0 4px 12px rgba(26, 107, 74, 0.3);
+    border-color: var(--green-700);
+    box-shadow: 0 4px 12px rgba(21, 87, 60, 0.2);
 }
 
-/* ── Wiki Card ── */
+.sub-tabs {
+    gap: 0.5rem;
+}
+
+.sub-filter {
+    padding: 0.4rem 1.2rem;
+    font-size: 0.8rem;
+    background: white;
+    border-color: var(--neutral-200);
+}
+
+.sub-filter.active {
+    background: #b56000;
+    color: white;
+    border-color: #b56000;
+}
+
 .wiki-card {
     background: white;
     border-radius: var(--radius-lg);
     overflow: hidden;
-    border: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: var(--shadow-sm);
-    transition: var(--transition);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid var(--neutral-100);
     display: flex;
     flex-direction: column;
-    cursor: pointer;
 }
 
 .wiki-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-xl);
+    border-color: var(--green-200);
 }
 
 .wiki-card-img {
-    height: 180px;
+    height: 200px;
     width: 100%;
-    position: relative;
+    overflow: hidden;
+    background: var(--neutral-50);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 4rem;
+    background-color: var(--neutral-50);
+    overflow: hidden;
+}
+
+.card-main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: #f7faf8;
 }
 
 .wiki-card-img::after {
-    content: '🌿';
-    opacity: 0.2;
+    display: none;
 }
 
 .wiki-card-body {
     padding: 1.5rem;
-    flex-grow: 1;
+    text-align: center;
 }
 
 .wiki-card-name {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--green-900);
-    margin-bottom: 0.25rem;
-}
-
-.wiki-card-en {
-    font-size: 0.85rem;
-    color: var(--neutral-500);
-    font-style: italic;
-    margin-bottom: 1rem;
     font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--green-900);
+    margin-bottom: 1rem;
+    font-weight: 700;
 }
 
-.wiki-card-footer {
-    padding: 1rem 1.5rem;
-    background: var(--neutral-50);
-    border-top: 1px solid var(--neutral-100);
+/* ── Badges ── */
+.badge-water {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 0.4rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge-error {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 0.4rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ── Detailed Modal ── */
+.modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(8px) !important;
+    z-index: 9999 !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 1rem !important;
+}
+
+.modal-overlay.active {
+    display: flex !important;
+}
+
+.modal-box {
+    background: white !important;
+    width: 95% !important;
+    max-width: 850px !important; 
+    max-height: 80vh !important;
+    border-radius: 1.5rem !important;
+    overflow-y: auto !important;
+    position: relative !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.close-modal-floating, .back-modal-floating {
+    position: absolute !important;
+    top: 1rem !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: white !important;
+    border: 1px solid #ddd !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-size: 1.1rem !important;
+    z-index: 100 !important;
+}
+
+.close-modal-floating { right: 1rem !important; }
+.back-modal-floating { left: 1rem !important; }
+
+/* Header Sections - صغرناهم */
+.modal-header-img {
+    height: 180px !important;
+    width: 100% !important;
+}
+
+.modal-header-img img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+.modal-header-banner {
+    height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.modal-header-banner.disease { background: linear-gradient(135deg, #e11d48, #9f1239) !important; }
+.modal-header-banner.fert { background: linear-gradient(135deg, #059669, #064e3b) !important; }
+
+.banner-emoji {
+    font-size: 2.5rem !important;
+}
+
+/* Content Layout - تصغير المكونات الداخلية */
+.modal-content {
+    padding: 1.5rem 2.5rem !important;
+}
+
+.detail-header {
+    margin-bottom: 1.5rem !important;
+    border-bottom: 1px solid var(--neutral-100) !important;
+    padding-bottom: 0.75rem !important;
+}
+
+.detail-title {
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    color: var(--green-900) !important;
+    margin-bottom: 0.2rem !important;
+}
+
+.detail-subtitle {
+    font-size: 0.85rem !important;
+}
+
+/* Info Grid */
+.info-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+    margin-bottom: 2rem !important;
+}
+
+.info-item {
+    background: var(--neutral-50) !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 1rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    border: 1px solid var(--neutral-100) !important;
+}
+
+.info-icon {
+    font-size: 1.1rem !important;
+    background: white !important;
+    width: 34px !important;
+    height: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 0.75rem !important;
+}
+
+.info-text {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+}
+
+.info-text .label {
+    font-size: 0.75rem;
+    color: var(--neutral-500);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-text .val {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--green-900);
+}
+
+/* Detail Sections */
+.detail-section {
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--green-900);
+    margin-bottom: 1.25rem;
+    display: flex;
     align-items: center;
+    gap: 0.75rem;
+}
+
+.wiki-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+}
+
+.badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
 }
 
 /* ── Modal ── */
@@ -197,20 +426,98 @@
     padding: 1rem;
 }
 
-.modal-overlay.active {
-    display: flex;
+.section-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--neutral-700);
 }
 
-.modal-box {
+.detail-list {
+    list-style: none;
+    padding: 0;
+}
+
+.detail-list li {
+    padding: 0.75rem 0;
+    color: var(--neutral-700);
+    border-bottom: 1px dashed var(--neutral-200);
+}
+
+.detail-list li::before {
+    content: '•';
+    color: var(--green-500);
+    font-weight: bold;
+    margin-left: 0.75rem;
+}
+
+/* Composition Tags */
+.comp-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.comp-tag {
+    background: var(--green-50);
+    color: var(--green-700);
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: 1px solid var(--green-100);
+}
+
+/* Interconnected Links */
+.detail-links {
+    background: var(--neutral-50);
+    padding: 2rem;
+    border-radius: 1.5rem;
+    margin-top: 2rem;
+}
+
+.link-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.link-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-lg);
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.link-btn:hover {
+    transform: scale(1.05);
+}
+
+.link-btn.disease { background: #fee2e2; color: #991b1b; }
+.link-btn.fert { background: #dcfce7; color: #166534; }
+.link-btn.plant { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+
+@media (max-width: 640px) {
+    .modal-content { padding: 1.5rem; }
+    .info-grid { grid-template-columns: 1fr; }
+    .detail-title { font-size: 1.8rem; }
+}
+
+/* ── Wiki Table ── */
+.table-responsive {
     background: white;
-    width: 100%;
-    max-width: 700px;
-    max-height: 90vh;
-    border-radius: var(--radius-xl);
+    width: 95%;
+    max-width: 480px;
+    max-height: 85vh;
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-xl);
     overflow-y: auto;
     position: relative;
-    animation: modalScale 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: modalScale 0.3s ease-out;
 }
 
 @keyframes modalScale {
@@ -218,21 +525,56 @@
         transform: scale(0.9);
         opacity: 0;
     }
-
     to {
         transform: scale(1);
         opacity: 1;
     }
 }
 
-/* Responsive Overrides */
-@media (max-width: 768px) {
-    .wiki-hero {
-        padding: 3.5rem 1.5rem;
-    }
+.modal-img-wrapper {
+    height: 180px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    position: relative;
+    background-color: var(--neutral-50);
+    overflow: hidden;
+}
 
-    .wiki-tabs {
-        top: 60px;
-        padding: 1.5rem 1rem;
-    }
+.modal-main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ── Pagination ── */
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 3rem;
+    padding: 1rem 0;
+}
+
+.page-btn {
+    background: white;
+    border: 1px solid var(--neutral-200);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.page-btn.active {
+    background: var(--green-600);
+    color: white;
+    border-color: var(--green-600);
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
