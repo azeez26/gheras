@@ -10,6 +10,7 @@ import { Wiki } from './features/wiki/wiki';
 import { Shop } from './features/shop/shop';
 import { Forum } from './features/community/forum/forum';
 import { Blog } from './features/community/blog/blog';
+import { BlogDetailComponent } from './core/components/blog-detail/blog-detail';
 import { UserDashboard } from './features/dashboard/user-dashboard/user-dashboard';
 import { AdminDashboard } from './features/dashboard/admin-dashboard/admin-dashboard';
 import { SpecialistDashboard } from './features/dashboard/specialist-dashboard/specialist-dashboard';
@@ -24,10 +25,15 @@ export const routes: Routes = [
   { path: 'wiki', component: Wiki },
   { path: 'shop', component: Shop },
   { path: 'forum', component: Forum },
+
+  // مسارات البلوجات
   { path: 'blog', component: Blog },
+  { path: 'blog/:slug', component: BlogDetailComponent },
+
   { path: 'dashboard', component: UserDashboard, canActivate: [authGuard] },
   { path: 'dashboard/admin', component: AdminDashboard, canActivate: [authGuard, adminGuard] },
   { path: 'dashboard/specialist', component: SpecialistDashboard, canActivate: [authGuard] },
   { path: 'dashboard/premium', component: PremiumDashboard, canActivate: [authGuard] },
+
   { path: '**', redirectTo: '' }
 ];
