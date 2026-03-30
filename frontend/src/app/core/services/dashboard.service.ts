@@ -43,6 +43,14 @@ export class DashboardService {
     return this.http.post(`${this.baseUrl}/product/add`, data);
   }
 
+  updateProductAdmin(id: string, data: FormData): Observable<any> {
+    return this.http.put(`${this.baseUrl}/product/${id}`, data);
+  }
+
+  deleteProductAdmin(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/product/${id}`);
+  }
+
   addCategoryAdmin(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/category`, data);
   }

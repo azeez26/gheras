@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { StoreService } from '../../core/services/store.service';
 import { AuthService } from '../../core/services/auth.service';
-import { AlertService } from '../../core/services/alert.service';
 
 interface LocalProduct {
   id: string;
@@ -17,7 +16,6 @@ interface LocalProduct {
   rating: number;
   reviews: number;
   emoji: string;
-  image?: string;
   color: string;
   isBestSeller?: boolean;
 }
@@ -39,7 +37,7 @@ export class Shop implements OnInit {
   private router = inject(Router);
   private alertService = inject(AlertService);
 
-  products = signal<LocalProduct[]>([]);
+  products = signal<Product[]>([]);
   categories = signal<any[]>([]);
 
   ngOnInit() {
@@ -55,7 +53,6 @@ export class Shop implements OnInit {
         rating: 4 + Math.random(),
         reviews: Math.floor(Math.random() * 100) + 10,
         emoji: '🌿',
-        image: p.images?.[0] || '',
         color: 'linear-gradient(135deg,#f0fdf4,#dcfce7)',
         isBestSeller: p.stock < 10 && p.stock > 0
       })));
@@ -69,13 +66,10 @@ export class Shop implements OnInit {
   filteredProducts = computed(() => {
     let list = [...this.products()];
     const filter = this.activeFilter();
-    const priceLimit = this.maxPrice();
-    const sort = this.sortOption();
-
-    // Filtering
-    list = list.filter(p => {
+    const price = this.maxPrice;
+    return list.filter(p => {
       const matchesFilter = filter === 'all' || p.catId === filter;
-      const matchesPrice = p.price <= priceLimit;
+      const matchesPrice = price === 0 || p.price <= price;
       return matchesFilter && matchesPrice;
     });
 
@@ -101,14 +95,16 @@ export class Shop implements OnInit {
     this.sortOption.set(event.target.value);
   }
 
-  addToCart(product: LocalProduct) {
+  addToCart(product: Product) {
     if (!this.authService.currentUser()) {
       this.alertService.show('الرجاء تسجيل الدخول أولاً لإضافة منتجات للسلة', 'info');
       this.router.navigate(['/login']);
       return;
     }
 
-    this.storeService.addToCart(product.id, 1, product.price).subscribe({
+    const priceToAdd = product.finalPrice ? product.finalPrice : product.price;
+
+    this.storeService.addToCart(product._id, 1, priceToAdd).subscribe({
       next: () => {
         this.storeService.isCartOpen.set(true);
       },
