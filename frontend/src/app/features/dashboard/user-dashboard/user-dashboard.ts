@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
+import { AlertService } from '../../../core/services/alert.service';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -14,6 +15,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class UserDashboard implements OnInit {
   private authService = inject(AuthService);
+  private alertService = inject(AlertService);
   private http = inject(HttpClient);
 
   // User info
@@ -140,7 +142,7 @@ export class UserDashboard implements OnInit {
       error: (err) => {
         console.error('Error adding plant:', err);
         const msg = err.error?.message || 'حدث خطأ أثناء إضافة النبتة. قد تكون وصلت للحد الأقصى أو النبتة موجودة بالفعل.';
-        alert(msg);
+        this.alertService.error(msg);
       }
     });
   }
@@ -169,7 +171,7 @@ export class UserDashboard implements OnInit {
       },
       error: (err) => {
         console.error('Error watering plant:', err);
-        alert(err.error?.message || 'حدث خطأ أثناء محاولة سقاية النبتة.');
+        this.alertService.error(err.error?.message || 'حدث خطأ أثناء محاولة سقاية النبتة.');
       }
     });
   }

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
 export interface User {
+  _id?: string;
   id?: string;
   username?: string;
   email?: string;
@@ -25,14 +26,52 @@ export class AuthService {
     this.loadUserFromStorage();
   }
 
+  // المرجع النهائي لمعرف المستخدم - Final source of truth for User ID
+  getUserId(): string | null {
+    const user = this.currentUser();
+    const token = localStorage.getItem('token');
+    
+    // 1. Try from signal
+    if (user?._id || user?.id) return (user._id || user.id) as string;
+    
+    // 2. Try from localStorage directly
+    const userJson = localStorage.getItem('user');
+    if (userJson && userJson !== 'null') {
+      try {
+        const u = JSON.parse(userJson);
+        if (u._id || u.id) return u._id || u.id;
+      } catch(e) {}
+    }
+    
+    // 3. Last resort: Decode token on the fly
+    if (token) {
+      const decoded = this.decodeToken(token);
+      return decoded?._id || decoded?.id || null;
+    }
+    
+    return null;
+  }
+
   // ================= LOAD USER =================
-  private loadUserFromStorage() {
+  public loadUserFromStorage() {
     const token = localStorage.getItem('token');
     const userJson = localStorage.getItem('user');
 
     if (userJson && userJson !== 'undefined' && userJson !== 'null') {
       try {
-        const user = JSON.parse(userJson);
+        let user = JSON.parse(userJson);
+
+        // Map id/_id for consistency if missing
+        if (!user._id && user.id) user._id = user.id;
+        if (!user.id && user._id) user.id = user._id;
+
+        // If ID is still missing but token exists, try to recover it
+        if ((!user.id || !user._id) && token) {
+          const decoded = this.decodeToken(token);
+          if (decoded) {
+            user = { ...decoded, ...user };
+          }
+        }
 
         // تأكد إن فيه role، لو لا جيبه من التوكين
         if (!user.role && token) {
@@ -73,6 +112,7 @@ export class AuthService {
       const decoded = JSON.parse(jsonPayload);
 
       return {
+        _id: decoded.id || decoded.sub || decoded._id,
         id: decoded.id || decoded.sub || decoded._id,
         username: decoded.username || decoded.name || decoded.email,
         email: decoded.email,
@@ -139,6 +179,10 @@ export class AuthService {
 
         // 6. Save user
         if (user) {
+          // Ensure consistency
+          if (!user._id && user.id) user._id = user.id;
+          if (!user.id && user._id) user.id = user._id;
+          
           localStorage.setItem('user', JSON.stringify(user));
           this.currentUser.set(user);
 

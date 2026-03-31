@@ -50,6 +50,7 @@ exports.addToCart = catchAsync(async (req, res, next) => {
   }
 
   await cart.save();
+  await cart.populate("items.product", "name images stock isActive");
   res.status(200).json({ status: "success", data: cart });
 });
 
@@ -71,6 +72,7 @@ exports.updateCartItem = catchAsync(async (req, res, next) => {
 
   item.quantity = quantity;
   await cart.save();
+  await cart.populate("items.product", "name images stock isActive");
 
   res.status(200).json({ status: "success", data: cart });
 });
@@ -86,6 +88,7 @@ exports.removeCartItem = catchAsync(async (req, res, next) => {
   cart.items = cart.items.filter(item => item.product.toString() !== productId);
 
   await cart.save();
+  await cart.populate("items.product", "name images stock isActive");
   res.status(200).json({ status: "success", data: cart });
 });
 

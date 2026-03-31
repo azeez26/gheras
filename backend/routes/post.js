@@ -11,6 +11,9 @@ router.post("/", authentication, postController.createPost);
 // Get All Approved Posts
 router.get("/", postController.getAllPosts);
 
+// Admin: Get Pending Posts
+router.get("/pending", authentication, authorization("admin"), postController.getPendingPosts);
+
 // Get Post By ID
 router.get("/:id", postController.getPostById);
 
@@ -19,10 +22,6 @@ router.put("/:id", authentication, postController.updatePost);
 
 // Delete Post
 router.delete("/:id", authentication, postController.deletePost);
-
-
-// Admin: Get Pending Posts
-router.get("/pending", authentication, authorization("admin"), postController.getPendingPosts);
 
 
 // Admin: Approve Post

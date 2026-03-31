@@ -10,27 +10,48 @@ export class CommunityService {
   private http = inject(HttpClient);
   private baseUrl = 'http://localhost:3000/api';
 
-  getPosts(): Observable<Post[]> {
-    return this.http.get<Post[]>(`${this.baseUrl}/posts`);
+  private getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    };
   }
 
-  createPost(post: Partial<Post>): Observable<Post> {
-    return this.http.post<Post>(`${this.baseUrl}/posts`, post);
+  getPosts(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/posts`);
   }
 
-  getComments(postId: string): Observable<Comment[]> {
-    return this.http.get<Comment[]>(`${this.baseUrl}/comments?post=${postId}`);
+  getPendingPosts(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/posts/pending`, this.getAuthHeaders());
   }
 
-  addComment(comment: Partial<Comment>): Observable<Comment> {
-    return this.http.post<Comment>(`${this.baseUrl}/comments`, comment);
+  approvePost(postId: string): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/posts/approve/${postId}`, {}, this.getAuthHeaders());
   }
 
-  getBlogs(): Observable<Blog[]> {
-    return this.http.get<Blog[]>(`${this.baseUrl}/blogs`);
+  rejectPost(postId: string): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/posts/reject/${postId}`, {}, this.getAuthHeaders());
   }
 
-  getBlogBySlug(slug: string): Observable<Blog> {
-    return this.http.get<Blog>(`${this.baseUrl}/blogs/${slug}`);
+  createPost(post: Partial<Post>): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/posts`, post, this.getAuthHeaders());
+  }
+
+  getComments(postId: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/comments/post/${postId}`);
+  }
+
+  addComment(postId: string, text: string, authorId: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/comments`, { text, author: authorId, post: postId }, this.getAuthHeaders());
+  }
+
+  getBlogs(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/blogs`);
+  }
+
+  getBlogBySlug(slug: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/blogs/${slug}`);
   }
 }

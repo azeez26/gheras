@@ -18,9 +18,14 @@ exports.createPost = catchAsync(async (req, res, next) => {
     });
 });
 
-// 2. Get All Posts (approved only)
+// 2. Get All Posts (approved only + existing old posts without status)
 exports.getAllPosts = catchAsync(async (req, res, next) => {
-    const posts = await Post.find({ status: "approved" })
+    const posts = await Post.find({
+        $or: [
+            { status: "approved" },
+            { status: { $exists: false } }
+        ]
+    })
         .populate("author")
         .populate("comments");
 
