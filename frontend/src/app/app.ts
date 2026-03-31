@@ -5,11 +5,12 @@ import { Footer } from './core/layout/footer/footer';
 import { HttpClientModule } from '@angular/common/http';
 import { NavbarComponent } from './core/layout/navbar/navbar';
 import { CartComponent } from './core/layout/cart/cart';
+import { AlertComponent } from './core/layout/alert/alert.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, Footer, CartComponent],
+  imports: [RouterOutlet, NavbarComponent, Footer, CartComponent, AlertComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

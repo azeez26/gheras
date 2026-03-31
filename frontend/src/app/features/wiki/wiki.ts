@@ -1,7 +1,7 @@
 import { Component, signal, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { WikiService, WikiResponse } from '../../core/services/wiki.service';
+import { WikiService } from '../../core/services/wiki.service';
 
 @Component({
   selector: 'app-wiki',
@@ -9,7 +9,6 @@ import { WikiService, WikiResponse } from '../../core/services/wiki.service';
   imports: [CommonModule, FormsModule],
   templateUrl: './wiki.html',
   styleUrl: './wiki.css',
-  encapsulation: ViewEncapsulation.None
 })
 export class Wiki implements OnInit {
   private wikiService = inject(WikiService);
@@ -27,6 +26,7 @@ export class Wiki implements OnInit {
 
   // Pagination
   currentPage = signal<number>(1);
+  pageSize = 18;
   totalPages = 1;
   totalItems = 0;
 
@@ -59,48 +59,66 @@ export class Wiki implements OnInit {
     this.loading.set(true);
     const filter = this.activeFilter();
     const page = this.currentPage();
+    const limit = this.pageSize;
 
-    // Reset lists
-    if (filter === 'all' || filter === 'plants') {
-      this.wikiService.getPlants(page, filter === 'all' ? 5 : 20).subscribe(res => {
-        this.plants.set(res.data.plants || []);
-        if (filter === 'plants') {
-          this.totalPages = res.totalPages;
-          this.totalItems = res.total;
-        }
-        this.finalizeLoading(filter);
-      });
+    // Reset data
+    if (filter === 'plants') {
+        this.diseases.set([]);
+        this.fertilizers.set([]);
+    } else if (filter === 'diseases') {
+        this.plants.set([]);
+        this.fertilizers.set([]);
+    } else if (filter === 'fertilizers') {
+        this.plants.set([]);
+        this.diseases.set([]);
     }
 
-    if (filter === 'all' || filter === 'diseases') {
-      this.wikiService.getDiseases(page, filter === 'all' ? 5 : 20).subscribe(res => {
-        this.diseases.set(res.data.diseases || []);
-        if (filter === 'diseases') {
-          this.totalPages = res.totalPages;
-          this.totalItems = res.total;
-        }
-        this.finalizeLoading(filter);
-      });
-    }
-
-    if (filter === 'all' || filter === 'fertilizers') {
-      this.wikiService.getFertilizers(page, filter === 'all' ? 5 : 20).subscribe(res => {
-        this.fertilizers.set(res.data.fertilizers || []);
-        if (filter === 'fertilizers') {
-          this.totalPages = res.totalPages;
-          this.totalItems = res.total;
-        }
-        this.finalizeLoading(filter);
-      });
-    }
-  }
-
-  private finalizeLoading(filter: string) {
     if (filter === 'all') {
-      this.totalPages = 1;
+      const subLimit = Math.floor(limit / 3); // 6 each
+      import('rxjs').then(({ forkJoin }) => {
+        forkJoin({
+          plants: this.wikiService.getPlants(page, subLimit),
+          diseases: this.wikiService.getDiseases(page, subLimit),
+          fertilizers: this.wikiService.getFertilizers(page, subLimit)
+        }).subscribe(results => {
+          this.plants.set(results.plants.data.plants || []);
+          this.diseases.set(results.diseases.data.diseases || []);
+          this.fertilizers.set(results.fertilizers.data.fertilizers || []);
+          
+          this.totalPages = Math.max(
+            results.plants.totalPages || 1,
+            results.diseases.totalPages || 1,
+            results.fertilizers.totalPages || 1
+          );
+          this.loading.set(false);
+        });
+      });
+    } else {
+      if (filter === 'plants') {
+        this.wikiService.getPlants(page, limit).subscribe(res => {
+          this.plants.set(res.data.plants || []);
+          this.totalPages = res.totalPages || 1;
+          this.totalItems = res.total || 0;
+          this.loading.set(false);
+        });
+      } else if (filter === 'diseases') {
+        this.wikiService.getDiseases(page, limit).subscribe(res => {
+          this.diseases.set(res.data.diseases || []);
+          this.totalPages = res.totalPages || 1;
+          this.totalItems = res.total || 0;
+          this.loading.set(false);
+        });
+      } else if (filter === 'fertilizers') {
+        this.wikiService.getFertilizers(page, limit).subscribe(res => {
+          this.fertilizers.set(res.data.fertilizers || []);
+          this.totalPages = res.totalPages || 1;
+          this.totalItems = res.total || 0;
+          this.loading.set(false);
+        });
+      }
     }
-    this.loading.set(false);
   }
+
 
   get displayedItems() {
     let combined: any[] = [];
@@ -175,8 +193,8 @@ export class Wiki implements OnInit {
     // Client-side search
     if (this.searchQuery) {
       const q = this.searchQuery.toLowerCase();
-      combined = combined.filter(item =>
-        item.displayName?.toLowerCase().includes(q) ||
+      combined = combined.filter(item => 
+        item.displayName?.toLowerCase().includes(q) || 
         item.displaySub?.toLowerCase().includes(q)
       );
     }
@@ -188,7 +206,6 @@ export class Wiki implements OnInit {
     this.activeFilter.set(cat);
     this.subActiveFilter.set('all');
     this.currentPage.set(1);
-    // Don't clear plants immediately if switching type, fetch logic will handle it
     this.loadData();
   }
 
@@ -197,13 +214,30 @@ export class Wiki implements OnInit {
   }
 
   goToPage(page: number) {
-    if (page < 1 || page > this.totalPages) return;
+    if (page < 1 || (this.totalPages > 0 && page > this.totalPages)) return;
     this.currentPage.set(page);
     this.loadData();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   getPagesArray(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+    const total = this.totalPages;
+    if (total <= 1) return [];
+    
+    // Limit visible pages to 5
+    const current = this.currentPage();
+    let start = Math.max(1, current - 2);
+    let end = Math.min(total, start + 4);
+    
+    if (end - start < 4) {
+      start = Math.max(1, end - 4);
+    }
+    
+    const pages = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   safeParse(val: any) {
@@ -215,9 +249,9 @@ export class Wiki implements OnInit {
   openModal(item: any) {
     if (item.type === 'plant') {
       this.wikiService.getPlantById(item._id).subscribe(res => {
-        const p = res.data.plant;
-        this.selectedPlant.set({
-          ...p,
+        const p = res;
+        this.selectedPlant.set({ 
+          ...p, 
           type: 'plant',
           name: p.commonName || 'نبتة جديدة',
           scientificName: p.scientificName || 'Phaseolus',
@@ -228,9 +262,9 @@ export class Wiki implements OnInit {
       });
     } else if (item.type === 'disease') {
       this.wikiService.getDiseaseById(item._id).subscribe(res => {
-         const d = res.data.disease;
-         this.selectedPlant.set({
-           ...d,
+         const d = res;
+         this.selectedPlant.set({ 
+           ...d, 
            type: 'disease',
            name: d.name || 'مرض',
            scientificName: d.scientificName || 'مرض نباتي'
@@ -238,9 +272,9 @@ export class Wiki implements OnInit {
       });
     } else if (item.type === 'fertilizer') {
       this.wikiService.getFertilizerById(item._id).subscribe(res => {
-        const f = res.data.fertilizer;
-        this.selectedPlant.set({
-          ...f,
+        const f = res;
+        this.selectedPlant.set({ 
+          ...f, 
           type: 'fertilizer',
           name: f.name || 'سماد',
           scientificName: f.type || 'سماد عضوي'
@@ -250,24 +284,7 @@ export class Wiki implements OnInit {
   }
 
   closeModal() {
-    this.selectedItem.set(null);
-    this.itemType.set(null);
-    this.navigationHistory = [];
-  }
-
-  // Logic to find plants related to a specific disease or fertilizer
-  getRelatedPlants(itemId: string, type: 'disease' | 'fertilizer'): Plant[] {
-    return this.plants().filter(p => {
-      const field = type === 'disease' ? p.diseases : p.fertilizers;
-      return field?.some(ref => {
-        const refId = typeof ref === 'string' ? ref : (ref._id || ref.id);
-        return refId === itemId;
-      });
-    });
-  }
-
-  getId(item: any): string {
-    return item?._id || item?.id || '';
+    this.selectedPlant.set(null);
   }
 
   getImageUrl(path: string) {

@@ -167,29 +167,28 @@
     border-color: #b56000;
 }
 
+/* ── Wiki Card ── */
 .wiki-card {
     background: white;
     border-radius: var(--radius-lg);
     overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: var(--shadow-sm);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    border: 1px solid var(--neutral-100);
+    transition: var(--transition);
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 }
 
 .wiki-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-xl);
-    border-color: var(--green-200);
 }
 
 .wiki-card-img {
     height: 200px;
     width: 100%;
-    overflow: hidden;
-    background: var(--neutral-50);
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -211,192 +210,31 @@
 
 .wiki-card-body {
     padding: 1.5rem;
-    text-align: center;
+    flex-grow: 1;
 }
 
 .wiki-card-name {
-    font-family: var(--font-display);
     font-size: 1.25rem;
-    color: var(--green-900);
-    margin-bottom: 1rem;
     font-weight: 700;
+    color: var(--green-900);
+    margin-bottom: 0.25rem;
 }
 
-/* ── Badges ── */
-.badge-water {
-    background: #e0f2fe;
-    color: #0369a1;
-    padding: 0.4rem 1rem;
-    border-radius: var(--radius-full);
+.wiki-card-en {
     font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.badge-error {
-    background: #fee2e2;
-    color: #991b1b;
-    padding: 0.4rem 1rem;
-    border-radius: var(--radius-full);
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-/* ── Detailed Modal ── */
-.modal-overlay {
-    position: fixed !important;
-    inset: 0 !important;
-    background: rgba(0, 0, 0, 0.7) !important;
-    backdrop-filter: blur(8px) !important;
-    z-index: 9999 !important;
-    display: none !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 1rem !important;
-}
-
-.modal-overlay.active {
-    display: flex !important;
-}
-
-.modal-box {
-    background: white !important;
-    width: 95% !important;
-    max-width: 850px !important; 
-    max-height: 80vh !important;
-    border-radius: 1.5rem !important;
-    overflow-y: auto !important;
-    position: relative !important;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
-}
-
-.close-modal-floating, .back-modal-floating {
-    position: absolute !important;
-    top: 1rem !important;
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 50% !important;
-    background: white !important;
-    border: 1px solid #ddd !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    font-size: 1.1rem !important;
-    z-index: 100 !important;
-}
-
-.close-modal-floating { right: 1rem !important; }
-.back-modal-floating { left: 1rem !important; }
-
-/* Header Sections - صغرناهم */
-.modal-header-img {
-    height: 180px !important;
-    width: 100% !important;
-}
-
-.modal-header-img img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-}
-
-.modal-header-banner {
-    height: 60px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-.modal-header-banner.disease { background: linear-gradient(135deg, #e11d48, #9f1239) !important; }
-.modal-header-banner.fert { background: linear-gradient(135deg, #059669, #064e3b) !important; }
-
-.banner-emoji {
-    font-size: 2.5rem !important;
-}
-
-/* Content Layout - تصغير المكونات الداخلية */
-.modal-content {
-    padding: 1.5rem 2.5rem !important;
-}
-
-.detail-header {
-    margin-bottom: 1.5rem !important;
-    border-bottom: 1px solid var(--neutral-100) !important;
-    padding-bottom: 0.75rem !important;
-}
-
-.detail-title {
-    font-size: 1.5rem !important;
-    font-weight: 800 !important;
-    color: var(--green-900) !important;
-    margin-bottom: 0.2rem !important;
-}
-
-.detail-subtitle {
-    font-size: 0.85rem !important;
-}
-
-/* Info Grid */
-.info-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 1rem !important;
-    margin-bottom: 2rem !important;
-}
-
-.info-item {
-    background: var(--neutral-50) !important;
-    padding: 0.75rem 1rem !important;
-    border-radius: 1rem !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.75rem !important;
-    border: 1px solid var(--neutral-100) !important;
-}
-
-.info-icon {
-    font-size: 1.1rem !important;
-    background: white !important;
-    width: 34px !important;
-    height: 34px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-radius: 0.75rem !important;
-}
-
-.info-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.info-text .label {
-    font-size: 0.75rem;
     color: var(--neutral-500);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-style: italic;
+    margin-bottom: 1rem;
+    font-family: var(--font-display);
 }
 
-.info-text .val {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--green-900);
-}
-
-/* Detail Sections */
-.detail-section {
-    margin-bottom: 3rem;
-}
-
-.section-title {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: var(--green-900);
-    margin-bottom: 1.25rem;
+.wiki-card-footer {
+    padding: 1rem 1.5rem;
+    background: var(--neutral-50);
+    border-top: 1px solid var(--neutral-100);
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.75rem;
 }
 
 .wiki-card-meta {
@@ -426,89 +264,11 @@
     padding: 1rem;
 }
 
-.section-text {
-    font-size: 1.05rem;
-    line-height: 1.8;
-    color: var(--neutral-700);
-}
-
-.detail-list {
-    list-style: none;
-    padding: 0;
-}
-
-.detail-list li {
-    padding: 0.75rem 0;
-    color: var(--neutral-700);
-    border-bottom: 1px dashed var(--neutral-200);
-}
-
-.detail-list li::before {
-    content: '•';
-    color: var(--green-500);
-    font-weight: bold;
-    margin-left: 0.75rem;
-}
-
-/* Composition Tags */
-.comp-list {
+.modal-overlay.active {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
 }
 
-.comp-tag {
-    background: var(--green-50);
-    color: var(--green-700);
-    padding: 0.5rem 1.25rem;
-    border-radius: var(--radius-full);
-    font-weight: 700;
-    font-size: 0.9rem;
-    border: 1px solid var(--green-100);
-}
-
-/* Interconnected Links */
-.detail-links {
-    background: var(--neutral-50);
-    padding: 2rem;
-    border-radius: 1.5rem;
-    margin-top: 2rem;
-}
-
-.link-btns {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.link-btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius-lg);
-    border: none;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.link-btn:hover {
-    transform: scale(1.05);
-}
-
-.link-btn.disease { background: #fee2e2; color: #991b1b; }
-.link-btn.fert { background: #dcfce7; color: #166534; }
-.link-btn.plant { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
-
-@media (max-width: 640px) {
-    .modal-content { padding: 1.5rem; }
-    .info-grid { grid-template-columns: 1fr; }
-    .detail-title { font-size: 1.8rem; }
-}
-
-/* ── Wiki Table ── */
-.table-responsive {
+.modal-box {
     background: white;
     width: 95%;
     max-width: 480px;
@@ -574,7 +334,18 @@
     border-color: var(--green-600);
 }
 
+.page-btn:hover:not(:disabled):not(.active) {
+    background: var(--neutral-50);
+    border-color: var(--green-500);
+}
+
 .page-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.page-ellipsis {
+    color: var(--neutral-400);
+    padding: 0 0.5rem;
+    user-select: none;
 }
