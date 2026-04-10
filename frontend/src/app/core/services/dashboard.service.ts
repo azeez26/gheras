@@ -89,4 +89,8 @@ export class DashboardService {
   deleteUserAdmin(id: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/users/${id}`);
   }
+
+  updateOrderStatus(orderId: string, status: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/orders/admin/${orderId}/status`, { status });
+  }
 }
