@@ -27,6 +27,10 @@ export class AdminDashboard implements OnInit {
 
   activeView: string = 'stats';
 
+  // Orders
+  allOrders: any[] = [];
+  loadingOrders = false;
+  
   // Forum Moderation
   pendingPosts: any[] = [];
   loadingPending = false;
@@ -289,6 +293,7 @@ export class AdminDashboard implements OnInit {
     });
 
     this.loadPendingPosts();
+    this.loadOrders();
 
     this.wikiService.getPlants(1, 200).subscribe({
       next: (res: any) => {
@@ -331,6 +336,66 @@ export class AdminDashboard implements OnInit {
         this.allUsers = Array.isArray(data) ? data : [];
       },
       error: (err) => { console.error('Error fetching users:', err); }
+    });
+  }
+
+  loadOrders() {
+    this.loadingOrders = true;
+    this.dashboardService.getAllOrders().subscribe({
+      next: (res: any) => {
+        const data = res?.data || res;
+        this.allOrders = Array.isArray(data) ? data : [];
+        this.loadingOrders = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching orders:', err);
+        this.loadingOrders = false;
+      }
+    });
+  }
+
+  getOrderItemsSummary(items: any[]): string {
+    if (!items || items.length === 0) return 'لا توجد منتجات';
+    return items.map(i => `${i.product?.name || 'منتج'} (x${i.quantity})`).join(' ، ');
+  }
+
+  getStatusClass(status: string): string {
+    const classes: { [key: string]: string } = {
+      'pending': 'badge-amber',
+      'paid': 'badge-green',
+      'confirmed': 'badge-green',
+      'processing': 'badge-earth',
+      'shipped': 'badge-blue',
+      'delivered': 'badge-green',
+      'cancelled': 'badge-earth'
+    };
+    return classes[status] || 'badge-secondary';
+  }
+
+  getStatusLabel(status: string): string {
+    const labels: { [key: string]: string } = {
+      'pending': 'معلق',
+      'paid': 'مكتمل',
+      'confirmed': 'مؤكد',
+      'processing': 'جاري التجهيز',
+      'shipped': 'تم الشحن',
+      'delivered': 'مكتمل',
+      'cancelled': 'ملغي'
+    };
+    return labels[status] || status;
+  }
+
+  changeStatus(orderId: string, newStatus: string) {
+    this.dashboardService.updateOrderStatus(orderId, newStatus).subscribe({
+      next: () => {
+        this.alertService.success('تم تحديث حالة الطلب بنجاح ✅');
+        this.loadOrders();
+      },
+      error: (err: any) => {
+        console.error('Error updating order:', err);
+        this.alertService.error('حدث خطأ أثناء تحديث حالة الطلب');
+      }
     });
   }
 
